@@ -1,0 +1,3 @@
+git+https://github.com/shill1729/alphavantage.git
+quadprog
+scipy
