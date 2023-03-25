@@ -8,6 +8,8 @@ from optport import mv_solver
 from sdes import MultiGbm
 
 
+
+
 def update_with_quotes(S, api):
     """
     Download the latest yahoo quotes
