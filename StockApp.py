@@ -8,15 +8,12 @@ from optport import mv_solver
 from sdes import MultiGbm
 
 
-
-
 def update_with_quotes(S, api):
     """
     Download the latest yahoo quotes
     :param S: stock prices to update
     :param api: api object
-    :return:
-    data.frame
+    :return: DataFrame of stock prices
     """
     # Get today's date
     today = dt.date.today()
@@ -60,8 +57,13 @@ def compute_allocations(X, gbm, ema_filter=0.0, timescale=1 / 252):
 # Download data
 @st.cache_data()
 def download_data(symbols):
+    """
+    Download stock data (daily adjusted close prices) for a given set of tickers/symbols
+    :param symbols:
+    :return:
+    DataFrame of daily adjusted close prices
+    """
     # Data parameters
-    # symbols = ["SPY", "ROKU", "TSLA", "DIS", "RIOT", "GOTU", "NVDA", "VXX"]
     api = av.av()
     av_key = st.secrets["AV_KEY"]
     api.log_in(av_key)
@@ -100,7 +102,7 @@ if __name__ == "__main__":
     # Convert the ticker list to a list of strings
     symbols = [s.strip() for s in ticker_list.split(",")]
     X = None
-    timescale=None
+    timescale = None
     download_button = st.button("Download stocks")
     if download_button:
         X, timescale = download_data(symbols)

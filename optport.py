@@ -13,7 +13,7 @@ def unconstrained_control(drift, covariance):
 
 
 # Wang and Carreira-Perpinan's algorithm for prob. simplex projection.
-def project_to_simplex(y):
+def project_to_simplex(v):
     d = len(v)
     if np.all(v == 0):
         return np.ones_like(v) / len(v)
