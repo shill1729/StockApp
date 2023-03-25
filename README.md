@@ -1,5 +1,5 @@
 # StockApp
-This is a streamlit app for finding the 
+This is a streamlit app, [StockApp](https://shill1729-stockapp-stockapp-dzb1wj.streamlit.app/), for finding the 
 allocations $\vec{\alpha}$ for a given set of stocks that maximize
 log growth 
 
