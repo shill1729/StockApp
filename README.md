@@ -28,8 +28,8 @@ $$\alpha^* = \Sigma^{-1} \mu.$$
 
 The app prints the allocations for stocks with non-zero weight, the
 optimal growth value under such allocations, the drift
-and volatility of the portfolio, and the daily 99\% Value-at-Risk,
-i.e. worst-case loss on a given day, which has 1\% chance of occurring,
+and volatility of the portfolio, and the daily 99.9\% Value-at-Risk,
+i.e. worst-case loss on a given day, which has 0.1\% chance of occurring,
 per the fitted normal distribution with mean $\mu^T \alpha-\frac12 \alpha^T \Sigma \alpha$
 and variance $\alpha^T \Sigma \alpha$ where $\alpha=\alpha^*$.
 
