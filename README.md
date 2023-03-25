@@ -34,7 +34,9 @@ per the fitted normal distribution with mean $\mu^T \alpha-\frac12 \alpha^T \Sig
 and variance $\alpha^T \Sigma \alpha$ where $\alpha=\alpha^*$.
 
 
-
+# Limitations:
+The data-provider is AlphaVantage. This app uses my premium
+API key to download data. The limit is 30 stocks per minute.
 
 
 
