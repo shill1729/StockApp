@@ -120,7 +120,7 @@ if __name__ == "__main__":
             if np.abs(w[i]) > 0.001:
                 st.write(f"{asset}: {w[i]:.2%}")
         st.write("Optimal growth rate = "+str(round(g, 6)))
-        VaR = norm.ppf(0.01, loc=(mu-0.5*sigma**2)*timescale, scale=sigma*np.sqrt(timescale))
+        VaR = norm.ppf(0.001, loc=(mu-0.5*sigma**2)*timescale, scale=sigma*np.sqrt(timescale))
         st.write("Annual Drift = "+str(round(mu, 4)))
         st.write("Annual Volatility = " + str(round(sigma, 4)))
-        st.write("99% Daily Value at Risk = "+str(round(VaR, 4)))
+        st.write("99.9% Daily Value at Risk = "+str(round(VaR, 4)))
