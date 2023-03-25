@@ -22,6 +22,8 @@ allocations that budget to 100\% of one's wealth. Note the unconstrained
 solution is simply
 $$\alpha^* = \Sigma^{-1} \mu.$$
 
+
+
 The app prints the allocations for stocks with non-zero weight, the
 optimal growth value under such allocations, the drift
 and volatility of the portfolio, and the daily 99\% Value-at-Risk,
