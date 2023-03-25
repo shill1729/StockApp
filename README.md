@@ -16,10 +16,12 @@ matrix coefficients are estimated using exponentially weighted moving averages (
 The optimizaiton problem to solve is then the quadratic problem
 
 $$\max_{\alpha \in C} \mu^T \alpha - \frac12 \alpha^T \Sigma \alpha$$
+
 where $C$ is the constraint set of positive weights that sum to one, i.e.
 a probability simplex. In financial terms, this is the set of non-leveraged
 allocations that budget to 100\% of one's wealth. Note the unconstrained
 solution is simply
+
 $$\alpha^* = \Sigma^{-1} \mu.$$
 
 
