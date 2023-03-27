@@ -103,9 +103,9 @@ if __name__ == "__main__":
     symbols = [s.strip() for s in ticker_list.split(",")]
     X = None
     timescale = None
-    download_button = st.button("Download stocks")
-    if download_button:
-        X, timescale = download_data(symbols)
+    # download_button = st.button("Download stocks")
+    # if download_button:
+    #     X, timescale = download_data(symbols)
 
     # Define widgets
     ema_filter = st.slider("Select the EMA filter parameter:", 0.0, 1.0, 0.07, 0.01)
