@@ -55,7 +55,7 @@ def compute_allocations(X, gbm, ema_filter=0.0, timescale=1 / 252):
 
 
 # Download data
-@st.cache_data()
+@st.cache
 def download_data(symbols):
     """
     Download stock data (daily adjusted close prices) for a given set of tickers/symbols
@@ -106,6 +106,7 @@ if __name__ == "__main__":
     download_button = st.button("Download stocks")
     if download_button:
         X, timescale = download_data(symbols)
+
     # Define widgets
     ema_filter = st.slider("Select the EMA filter parameter:", 0.0, 1.0, 0.07, 0.01)
     allocate_button = st.button("Allocate")

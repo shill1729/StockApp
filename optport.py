@@ -13,19 +13,15 @@ def unconstrained_control(drift, covariance):
 
 
 # Wang and Carreira-Perpinan's algorithm for prob. simplex projection.
-def project_to_simplex(v):
-    d = len(v)
-    if np.all(v == 0):
-        return np.ones_like(v) / len(v)
-    u = np.sort(v)[::-1]
-    cssv = np.cumsum(u) - 1
-    ind = np.arange(d) + 1
-    cond = u - cssv / ind > 0
-    rho = ind[cond][-1]
-    theta = cssv[cond][-1] / float(rho)
-    w = np.maximum(v - theta, 0)
-    return w / np.sum(w)
-
+def project_to_simplex(y):
+    # Sort defaults to increasing order
+    u = np.sort(y)[::-1]  # Use indices to reverse to obtain decreasing
+    d = u.shape[0]
+    idx = np.arange(1, d + 1)
+    # We need rho to be in I_d := {1,2,...,d}
+    rho = np.max(np.where(u + (1 - np.cumsum(u)) / idx > 0)) + 1
+    lam = (1 / rho) * (1 - sum(u[:rho]))
+    return np.maximum(y + lam, 0)
 
 
 def kelly_criterion(drift, covariance):
