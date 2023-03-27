@@ -55,7 +55,7 @@ def compute_allocations(X, gbm, ema_filter=0.0, timescale=1 / 252):
 
 
 # Download data
-@st.cache
+@st.cache(allow_output_mutation=True)
 def download_data(symbols):
     """
     Download stock data (daily adjusted close prices) for a given set of tickers/symbols
