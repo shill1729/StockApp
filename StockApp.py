@@ -139,6 +139,7 @@ if __name__ == "__main__":
         if X is None:
             X, timescale = download_data(symbols)
         w,g,mu,sigma = compute_allocations(X, gbm, ema_filter, timescale)
+        st.write("================================")
         st.write("EWMA-GBM Allocations:")
         for i, asset in enumerate(X.columns):
             if np.abs(w[i]) > 0.001:
@@ -150,6 +151,7 @@ if __name__ == "__main__":
         st.write("99.9% Daily Value at Risk = "+str(round(VaR, 4)))
 
         w, g, mu, sigma = mixture_allocations(X, gbm, 0.01, timescale)
+        st.write("================================")
         st.write("Gaussian Mixture Allocations:")
         for i, asset in enumerate(X.columns):
             if np.abs(w[i]) > 0.001:
