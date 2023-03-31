@@ -150,9 +150,10 @@ if __name__ == "__main__":
         st.write("Annual Volatility = " + str(round(sigma, 4)))
         st.write("99.9% Daily Value at Risk = "+str(round(VaR, 4)))
 
-        w, g, mu, sigma = mixture_allocations(X, gbm, 0.01, timescale)
+
         st.write("================================")
         st.write("Gaussian Mixture Allocations:")
+        w, g, mu, sigma = mixture_allocations(X, gbm, 0.01, timescale)
         for i, asset in enumerate(X.columns):
             if np.abs(w[i]) > 0.001:
                 st.write(f"{asset}: {w[i]:.2%}")
