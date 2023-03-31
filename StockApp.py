@@ -66,7 +66,7 @@ def mixture_allocations(X, gbm, ema_filter=0.0, timescale=1/252):
     best_n_components = np.argmin(bic_scores) + 1
     st.write(f"Best number of components: {best_n_components}")
     mix = GaussianMixture(n_components=best_n_components, n_init=5, tol=10 ** -5, max_iter=200)
-    mix.fit(X)
+    mix.fit(X.to_numpy())
     j = mix.predict(X.iloc[-1, :].to_numpy().reshape(1, -1))[0]
     gbm.drift = mix.means_[j, :] / timescale
     gbm.Sigma = mix.covariances_[j, :, :] / timescale
