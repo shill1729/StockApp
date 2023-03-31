@@ -20,6 +20,12 @@ def ema(X, alpha=0.07):
 
 
 def ema_std(X, alpha=0.07):
+    """
+
+    :param X: The time-series to apply the EWMA to, univariate
+    :param alpha: the filtering parameter
+    :return:
+    """
     mu = ema(X, alpha)
     return np.sqrt(ema((X - mu) ** 2, alpha))
 

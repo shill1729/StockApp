@@ -4,6 +4,7 @@ import datetime as dt
 import pandas as pd
 import alphavantage.av as av
 from scipy.stats import norm
+from sklearn.mixture import GaussianMixture
 from optport import mv_solver
 from sdes import MultiGbm
 
@@ -49,6 +50,28 @@ def compute_allocations(X, gbm, ema_filter=0.0, timescale=1 / 252):
     gbm.fit(X, ema_filter=ema_filter, timescale=timescale)
     # st.write(gbm)
     w,g = mv_solver(gbm.drift, gbm.Sigma)
+    mu = w.dot(gbm.drift)
+    sigma = np.sqrt((w.T.dot(gbm.Sigma)).dot(w))
+    return w, g, mu, sigma
+
+
+def mixture_allocations(X, gbm, ema_filter=0.0, timescale=1/252):
+    # Fit Gaussian mixture models with different numbers of components
+    bic_scores = []
+    for n_components in range(1, 11):
+        model = GaussianMixture(n_components=n_components, n_init=5, tol=10 ** -5, max_iter=200)
+        model.fit(X)
+        bic_scores.append(model.bic(X))
+    # Select the number of components with the lowest BIC score
+    best_n_components = np.argmin(bic_scores) + 1
+    st.write(f"Best number of components: {best_n_components}")
+    mix = GaussianMixture(n_components=best_n_components, n_init=5, tol=10 ** -5, max_iter=200)
+    mix.fit(X)
+    j = mix.predict(X.iloc[-1, :].to_numpy().reshape(1, -1))[0]
+    gbm.drift = mix.means_[j, :] / timescale
+    gbm.Sigma = mix.covariances_[j, :, :] / timescale
+    gbm.drift += np.diag(gbm.Sigma) / 2
+    w, g = mv_solver(gbm.drift, gbm.Sigma)
     mu = w.dot(gbm.drift)
     sigma = np.sqrt((w.T.dot(gbm.Sigma)).dot(w))
     return w, g, mu, sigma
@@ -116,7 +139,7 @@ if __name__ == "__main__":
         if X is None:
             X, timescale = download_data(symbols)
         w,g,mu,sigma = compute_allocations(X, gbm, ema_filter, timescale)
-        st.write("Optimal Allocations:")
+        st.write("EWMA-GBM Allocations:")
         for i, asset in enumerate(X.columns):
             if np.abs(w[i]) > 0.001:
                 st.write(f"{asset}: {w[i]:.2%}")
@@ -125,3 +148,16 @@ if __name__ == "__main__":
         st.write("Annual Drift = "+str(round(mu, 4)))
         st.write("Annual Volatility = " + str(round(sigma, 4)))
         st.write("99.9% Daily Value at Risk = "+str(round(VaR, 4)))
+
+        w, g, mu, sigma = mixture_allocations(X, gbm, 0.01, timescale)
+        st.write("Gaussian Mixture Allocations:")
+        for i, asset in enumerate(X.columns):
+            if np.abs(w[i]) > 0.001:
+                st.write(f"{asset}: {w[i]:.2%}")
+        st.write("Optimal growth rate = " + str(round(g, 6)))
+        VaR = norm.ppf(0.001, loc=(mu - 0.5 * sigma ** 2) * timescale, scale=sigma * np.sqrt(timescale))
+        st.write("Annual Drift = " + str(round(mu, 4)))
+        st.write("Annual Volatility = " + str(round(sigma, 4)))
+        st.write("99.9% Daily Value at Risk = " + str(round(VaR, 4)))
+
+
