@@ -9,11 +9,10 @@ from optport import mv_solver
 from sdes import MultiGbm
 
 
-def update_with_quotes(S, api):
+def update_with_quotes(S):
     """
     Download the latest yahoo quotes
     :param S: stock prices to update
-    :param api: api object
     :return: DataFrame of stock prices
     """
     # Get today's date
@@ -24,7 +23,7 @@ def update_with_quotes(S, api):
 
     # Loop over each ticker and get the current price quote
     for symbol in symbols:
-        quote = api.getYahooQuote(symbol)
+        quote = av.get_yahoo_quote_v10(symbol)
         quotes.append(quote)
 
     # Create a new row with today's date and the quotes
@@ -49,32 +48,32 @@ def compute_allocations(X, gbm, ema_filter=0.0, timescale=1 / 252):
     """
     gbm.fit(X, ema_filter=ema_filter, timescale=timescale)
     # st.write(gbm)
-    w,g = mv_solver(gbm.drift, gbm.Sigma)
-    mu = w.dot(gbm.drift)
-    sigma = np.sqrt((w.T.dot(gbm.Sigma)).dot(w))
-    return w, g, mu, sigma
-
-
-def mixture_allocations(X, gbm, ema_filter=0.0, timescale=1/252):
-    # Fit Gaussian mixture models with different numbers of components
-    bic_scores = []
-    for n_components in range(1, 11):
-        model = GaussianMixture(n_components=n_components, n_init=5, tol=10 ** -5, max_iter=200)
-        model.fit(X)
-        bic_scores.append(model.bic(X))
-    # Select the number of components with the lowest BIC score
-    best_n_components = np.argmin(bic_scores) + 1
-    st.write(f"Best number of components: {best_n_components}")
-    mix = GaussianMixture(n_components=best_n_components, n_init=5, tol=10 ** -5, max_iter=200)
-    mix.fit(X.to_numpy())
-    j = mix.predict(X.iloc[-1, :].to_numpy().reshape(1, -1))[0]
-    gbm.drift = mix.means_[j, :] / timescale
-    gbm.Sigma = mix.covariances_[j, :, :] / timescale
-    gbm.drift += np.diag(gbm.Sigma) / 2
     w, g = mv_solver(gbm.drift, gbm.Sigma)
     mu = w.dot(gbm.drift)
     sigma = np.sqrt((w.T.dot(gbm.Sigma)).dot(w))
     return w, g, mu, sigma
+
+
+# def mixture_allocations(X, gbm, timescale=1 / 252):
+#     # Fit Gaussian mixture models with different numbers of components
+#     bic_scores = []
+#     for n_components in range(1, 11):
+#         model = GaussianMixture(n_components=n_components, n_init=5, tol=10 ** -5, max_iter=200)
+#         model.fit(X)
+#         bic_scores.append(model.bic(X))
+#     # Select the number of components with the lowest BIC score
+#     best_n_components = np.argmin(bic_scores) + 1
+#     st.write(f"Best number of components: {best_n_components}")
+#     mix = GaussianMixture(n_components=best_n_components, n_init=5, tol=10 ** -5, max_iter=200)
+#     mix.fit(X.to_numpy())
+#     j = mix.predict(X.iloc[-1, :].to_numpy().reshape(1, -1))[0]
+#     gbm.drift = mix.means_[j, :] / timescale
+#     gbm.Sigma = mix.covariances_[j, :, :] / timescale
+#     gbm.drift += np.diag(gbm.Sigma) / 2
+#     w, g = mv_solver(gbm.drift, gbm.Sigma)
+#     mu = w.dot(gbm.drift)
+#     sigma = np.sqrt((w.T.dot(gbm.Sigma)).dot(w))
+#     return w, g, mu, sigma
 
 
 # Download data
@@ -96,8 +95,8 @@ def download_data(symbols):
     what = "adjusted_close"
     asset_type = "stocks"
     # 1. Get timescale and data
-    timescale = api.timescale(period, interval, asset_type)
-    data = api.getAssets(symbols, period, interval, adjusted, what)
+    timescale = av.timescale(period, interval, asset_type)
+    data = api.get_assets(symbols, period, interval, adjusted, what)
     # Get YAHOO quotes:
     now = dt.datetime.now().astimezone(
         dt.timezone(dt.timedelta(hours=-4)))  # get current time in EDT timezone
@@ -105,10 +104,10 @@ def download_data(symbols):
     end_time = now.replace(hour=18, minute=0, second=0, microsecond=0)
     is_market_hours = now.weekday() < 5 and start_time <= now <= end_time
     if is_market_hours:
-        data = update_with_quotes(data, api)
+        data = update_with_quotes(data)
     else:
         st.write("Previous Close Prices:")
-        st.write(data.iloc[-1,:])
+        st.write(data.iloc[-1, :])
     X = data.apply(lambda x: np.diff(np.log(x)))
     return X, timescale
 
@@ -138,22 +137,9 @@ if __name__ == "__main__":
     if allocate_button:
         if X is None:
             X, timescale = download_data(symbols)
-        w,g,mu,sigma = compute_allocations(X, gbm, ema_filter, timescale)
+        w, g, mu, sigma = compute_allocations(X, gbm, ema_filter, timescale)
         st.write("================================")
         st.write("EWMA-GBM Allocations:")
-        for i, asset in enumerate(X.columns):
-            if np.abs(w[i]) > 0.001:
-                st.write(f"{asset}: {w[i]:.2%}")
-        st.write("Optimal growth rate = "+str(round(g, 6)))
-        VaR = norm.ppf(0.001, loc=(mu-0.5*sigma**2)*timescale, scale=sigma*np.sqrt(timescale))
-        st.write("Annual Drift = "+str(round(mu, 4)))
-        st.write("Annual Volatility = " + str(round(sigma, 4)))
-        st.write("99.9% Daily Value at Risk = "+str(round(VaR, 4)))
-
-
-        st.write("================================")
-        st.write("Gaussian Mixture Allocations:")
-        w, g, mu, sigma = mixture_allocations(X, gbm, 0.01, timescale)
         for i, asset in enumerate(X.columns):
             if np.abs(w[i]) > 0.001:
                 st.write(f"{asset}: {w[i]:.2%}")
@@ -162,5 +148,4 @@ if __name__ == "__main__":
         st.write("Annual Drift = " + str(round(mu, 4)))
         st.write("Annual Volatility = " + str(round(sigma, 4)))
         st.write("99.9% Daily Value at Risk = " + str(round(VaR, 4)))
-
 
