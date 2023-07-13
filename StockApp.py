@@ -119,7 +119,9 @@ if __name__ == "__main__":
     # Streamlit app code
     st.title("Optimal Log Growth Allocations")
     # Allow the user to enter a list of tickers
-    ticker_list = st.text_input("Enter a comma-separated list of tickers", "SPY,NVDA,RIOT,PYXS")
+    default_ticker_list = "SPY, UBER, BB, RIOT, MULN, NKLA, COIN, FCEL, BND, AAPL, ROKU, TSLA, " \
+                          "VXX, NVO, NIO, GOTU, NCMI, NVDA, RUN, WEAT"
+    ticker_list = st.text_input("Enter a comma-separated list of tickers", default_ticker_list)
 
     # Convert the ticker list to a list of strings
     symbols = [s.strip() for s in ticker_list.split(",")]
