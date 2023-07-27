@@ -23,7 +23,10 @@ def update_with_quotes(S):
 
     # Loop over each ticker and get the current price quote
     for symbol in symbols:
-        quote = av.get_yahoo_quote_v10(symbol)
+        # V10 just broke as of 7/27/2023
+        # quote = av.get_yahoo_quote_v10(symbol)
+        # V6 works as of 7/27/2023
+        quote = av.get_yahoo_quote_v6(symbol)
         quotes.append(quote)
 
     # Create a new row with today's date and the quotes
