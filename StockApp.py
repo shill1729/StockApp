@@ -159,5 +159,5 @@ if __name__ == "__main__":
         st.write("Dollar amounts to hold")
         for i, asset in enumerate(X.columns):
             if np.abs(w[i]) > 0.001:
-                st.write(f"{asset}: {total*w[i]:.2}")
+                st.write(f"{asset}: {round(total*w[i], 2)}")
 
