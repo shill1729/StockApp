@@ -156,7 +156,8 @@ if __name__ == "__main__":
         st.write("99.9% Daily Value at Risk = " + str(round(VaR, 4)))
         # Compute the dollar amounts
         total = -bankroll/VaR
+        st.write("Dollar amounts to hold")
         for i, asset in enumerate(X.columns):
             if np.abs(w[i]) > 0.001:
-                st.write(f"{asset}: {total*w[i]}")
+                st.write(f"{asset}: {total*w[i]:.2}")
 
