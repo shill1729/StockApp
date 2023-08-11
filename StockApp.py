@@ -136,6 +136,7 @@ if __name__ == "__main__":
 
     # Define widgets
     ema_filter = st.slider("Select the EMA filter parameter:", 0.0, 1.0, 0.07, 0.01)
+    bankroll = st.number_input("99\% VaR dollar amount:", 0.01, 10.**9, 100.)
     allocate_button = st.button("Allocate")
 
     # Update allocations when user clicks the update button
@@ -153,4 +154,9 @@ if __name__ == "__main__":
         st.write("Annual Drift = " + str(round(mu, 4)))
         st.write("Annual Volatility = " + str(round(sigma, 4)))
         st.write("99.9% Daily Value at Risk = " + str(round(VaR, 4)))
+        # Compute the dollar amounts
+        total = -bankroll/VaR
+        for i, asset in enumerate(X.columns):
+            if np.abs(w[i]) > 0.001:
+                st.write(f"{asset}: {total*w[i]}")
 
