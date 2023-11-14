@@ -8,6 +8,7 @@ from sklearn.mixture import GaussianMixture
 from optport import mv_solver
 from sdes import MultiGbm
 import finnhub
+import time
 
 
 def update_with_quotes(S):
@@ -30,6 +31,7 @@ def update_with_quotes(S):
         # quote = av.get_yahoo_quote_v6(symbol)
         quote = finnhub_client.quote(symbol)["c"]
         quotes.append(quote)
+        time.sleep(1/len(symbols))
 
     # Create a new row with today's date and the quotes
     new_row = pd.DataFrame([quotes], columns=symbols, index=[today])
