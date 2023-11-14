@@ -112,6 +112,10 @@ def download_data(symbols):
     start_time = now.replace(hour=9, minute=30, second=0, microsecond=0)
     end_time = now.replace(hour=18, minute=0, second=0, microsecond=0)
     is_market_hours = now.weekday() < 5 and start_time <= now <= end_time
+
+
+    is_market_hours = True
+
     if is_market_hours:
         data = update_with_quotes(data)
     else:
