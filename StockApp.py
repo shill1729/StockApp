@@ -113,14 +113,12 @@ def download_data(symbols):
     end_time = now.replace(hour=18, minute=0, second=0, microsecond=0)
     is_market_hours = now.weekday() < 5 and start_time <= now <= end_time
 
-
-    is_market_hours = True
-
     if is_market_hours:
         data = update_with_quotes(data)
     else:
         st.write("Previous Close Prices:")
         st.write(data.iloc[-1, :])
+
     X = data.apply(lambda x: np.diff(np.log(x)))
     return X, timescale
 
