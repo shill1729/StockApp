@@ -7,6 +7,7 @@ from scipy.stats import norm
 from sklearn.mixture import GaussianMixture
 from optport import mv_solver
 from sdes import MultiGbm
+import finnhub
 
 
 def update_with_quotes(S):
@@ -20,13 +21,14 @@ def update_with_quotes(S):
     symbols = S.columns
     # Create a list to store the quotes
     quotes = []
-
+    finnhub_client = finnhub.Client(api_key=st.secrets["FINNHUB_KEY"])
     # Loop over each ticker and get the current price quote
     for symbol in symbols:
         # V10 just broke as of 7/27/2023
         # quote = av.get_yahoo_quote_v10(symbol)
-        # V6 works as of 7/27/2023
-        quote = av.get_yahoo_quote_v6(symbol)
+        # V6 works as of 7/27/2023; V6 brok as of 11/13/2023
+        # quote = av.get_yahoo_quote_v6(symbol)
+        quote = finnhub_client.quote(symbol)["c"]
         quotes.append(quote)
 
     # Create a new row with today's date and the quotes
@@ -90,8 +92,10 @@ def download_data(symbols):
     """
     # Data parameters
     api = av.av()
+
     av_key = st.secrets["AV_KEY"]
     api.log_in(av_key)
+
     period = "daily"
     interval = None
     adjusted = True
