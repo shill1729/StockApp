@@ -13,7 +13,7 @@ import time
 
 def update_with_quotes(S):
     """
-    Download the latest yahoo quotes
+    Download the latest quotes
     :param S: stock prices to update
     :return: DataFrame of stock prices
     """
