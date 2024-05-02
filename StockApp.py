@@ -55,7 +55,7 @@ def compute_allocations(X, gbm, ema_filter=0.0, timescale=1 / 252):
     """
     gbm.fit(X, ema_filter=ema_filter, timescale=timescale)
     # st.write(gbm)
-    w, g = mv_solver(gbm.drift, gbm.Sigma)
+    w, g = mv_solver(gbm.drift-0.0512, gbm.Sigma)
     mu = w.dot(gbm.drift)
     sigma = np.sqrt((w.T.dot(gbm.Sigma)).dot(w))
     return w, g, mu, sigma
