@@ -10,6 +10,9 @@ from sdes import MultiGbm
 import finnhub
 import time
 
+rh_apr = 0.05
+rf_rate = np.log(1 + rh_apr)
+
 
 def update_with_quotes(S):
     """
@@ -55,8 +58,8 @@ def compute_allocations(X, gbm, ema_filter=0.0, timescale=1 / 252):
     """
     gbm.fit(X, ema_filter=ema_filter, timescale=timescale)
     # st.write(gbm)
-    w, g = mv_solver(gbm.drift-0.0512, gbm.Sigma)
-    mu = w.dot(gbm.drift)
+    w, g = mv_solver(gbm.drift-rf_rate, gbm.Sigma)
+    mu = w.dot(gbm.drift-rf_rate)
     sigma = np.sqrt((w.T.dot(gbm.Sigma)).dot(w))
     return w, g, mu, sigma
 
